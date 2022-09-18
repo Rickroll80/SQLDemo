@@ -66,6 +66,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else { return true; }
     }
 
+    /**
+     * Find customerModel in the database.
+     * If found, delete and return true.
+     * Otherwise, return false.
+     * @param customerModel
+     * @return
+     */
+    public boolean deleteOne(CustomerModel customerModel) {
+        // writable to permit deletion
+        SQLiteDatabase db = this.getWritableDatabase();
+        String queryString = "DELETE FROM " + CUSTOMER_TABLE + " WHERE " + COLUMN_ID + " = " + customerModel.getId();
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        // if an ID # is returned, return true (indicates success)
+        if (cursor.moveToFirst()) {
+            return true;
+        } else { return false; }
+
+    }
+
     // Create a method that SELECT-s all records from the database table
     // returns a list of CustomerModel
     public List<CustomerModel> getEveryone() {

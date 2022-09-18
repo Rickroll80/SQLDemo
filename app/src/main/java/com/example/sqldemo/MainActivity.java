@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,7 +89,22 @@ public class MainActivity extends AppCompatActivity {
                 ShowCustomersOnListView(databaseHelper);
             }
         });
+
+        // Click listener for some item in the ListView getting clicked
+        lv_customerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // get the customer that was clicked
+                CustomerModel clickedCustomer = (CustomerModel) parent.getItemAtPosition(position);
+                databaseHelper.deleteOne(clickedCustomer);
+                ShowCustomersOnListView(databaseHelper); // update the ListView upon delete
+                Toast.makeText(MainActivity.this, "Deleted " + clickedCustomer.toString(),Toast.LENGTH_SHORT).show();
+                // delete the customer that was clicked
+            }
+        });
     }
+
+
 
     /**
      * Updates the ListView to display the most recent version of the database
