@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     // references to buttons and other controls on the layout
@@ -53,15 +56,33 @@ public class MainActivity extends AppCompatActivity {
 
                 // add the customer to the database
                 boolean success = databaseHelper.addOne(customerModel);
-                Toast.makeText(MainActivity.this, "Success= " + success, Toast.LENGTH_SHORT);
+                Toast.makeText(MainActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();
 
             }
         });
 
+        // Upon click, the View All button displays the table contents
         btn_viewAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "View All button", Toast.LENGTH_SHORT).show();
+                /* Summary: lv_customerList is a ListView object, which is a kind of AdapterView.
+                   ListViews, being AdapterViews, need an adapter to determine their children.
+                   An ArrayAdapter is created and the list of CustomerModel objects from the database table is passed in.
+                   Then, the ArrayAdapter object is set as the adapter for the ListView lv_customerList.
+                 */
+
+                // reference to the database
+                DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+                List<CustomerModel> dbContents = databaseHelper.getEveryone();
+
+                // Toast.makeText(MainActivity.this, dbContents.toString(), Toast.LENGTH_SHORT).show();
+                // ArrayAdapter of CustomerModels - dbContents is passed to this adapter
+                ArrayAdapter customerArrayAdapter = new ArrayAdapter<CustomerModel>(MainActivity.this, android.R.layout.simple_list_item_1, dbContents); // simplest possible array adapter
+
+                // associate the ArrayAdapter with the View All button
+                // set the ListView customerList's adapter to be the ArrayAdapter
+                lv_customerList.setAdapter(customerArrayAdapter);
+
             }
         });
 

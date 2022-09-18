@@ -67,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Create a method that SELECT-s all records from the database table
-    // returns a list of CustomerModels
+    // returns a list of CustomerModel
     public List<CustomerModel> getEveryone() {
         List<CustomerModel> returnList = new ArrayList<>();
         // get data from the database
@@ -75,7 +75,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         // query returns a cursor (result set)
-        Cursor cursor = db.rawQuery(queryString);
+        Cursor cursor = db.rawQuery(queryString, null); // null b/c no prepared statements are in use here
         if (cursor.moveToFirst()) {
             // Loop through the cursor (result set) & create new customer objects
             // Insert the customer objects into the returnList.
@@ -86,16 +86,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 boolean customerActive = (cursor.getInt(3) == 1) ? true : false; // ternary operator
 
                 CustomerModel newCustomer = new CustomerModel(customerID, customerName, customerAge, customerActive);
-
+                returnList.add(newCustomer); // add the newCustomer to the returnList
             } while (cursor.moveToNext());
-
-
-
-
         } else {
-
+            // Failure – do not add anything to the list
         }
-
+        // clean up
+        cursor.close();
+        db.close();
 
         return returnList;
     }
