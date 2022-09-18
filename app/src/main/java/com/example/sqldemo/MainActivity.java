@@ -20,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
     Switch sw_activeCustomer;
     ListView lv_customerList;
 
+    ArrayAdapter customerArrayAdapter;
+    DatabaseHelper databaseHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
         et_age = findViewById(R.id.et_age);
         sw_activeCustomer = findViewById(R.id.sw_active);
         lv_customerList = findViewById(R.id.lv_customerList);
+
+        databaseHelper = new DatabaseHelper(MainActivity.this);
+
+        ShowCustomersOnListView(databaseHelper);
+
 
         // listener for the ADD button
         btn_add.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
                 boolean success = databaseHelper.addOne(customerModel);
                 Toast.makeText(MainActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();
 
+                // UPDATE ArrayAdapter after inserting a new person -> updates the ListView (the list display)
+                // ArrayAdapter of CustomerModels - dbContents is passed to this adapter
+                ShowCustomersOnListView(databaseHelper);
+
             }
         });
 
@@ -72,27 +84,23 @@ public class MainActivity extends AppCompatActivity {
                  */
 
                 // reference to the database
-                DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
-                List<CustomerModel> dbContents = databaseHelper.getEveryone();
-
-                // Toast.makeText(MainActivity.this, dbContents.toString(), Toast.LENGTH_SHORT).show();
-                // ArrayAdapter of CustomerModels - dbContents is passed to this adapter
-                ArrayAdapter customerArrayAdapter = new ArrayAdapter<CustomerModel>(MainActivity.this, android.R.layout.simple_list_item_1, dbContents); // simplest possible array adapter
-
-                // associate the ArrayAdapter with the View All button
-                // set the ListView customerList's adapter to be the ArrayAdapter
-                lv_customerList.setAdapter(customerArrayAdapter);
-
+                databaseHelper = new DatabaseHelper(MainActivity.this);
+                ShowCustomersOnListView(databaseHelper);
             }
         });
+    }
 
+    /**
+     * Updates the ListView to display the most recent version of the database
+     * @param databaseHelper
+     */
+    private void ShowCustomersOnListView(DatabaseHelper databaseHelper) {
+        // ArrayAdapter of CustomerModels - contents of database is passed to this adapter
+        // simple_list_item_1 – simplest possible array adapter
+        customerArrayAdapter = new ArrayAdapter<CustomerModel>(MainActivity.this, android.R.layout.simple_list_item_1, databaseHelper.getEveryone());
 
-
-
-
-
-
-
-
+        // associate the ArrayAdapter with the View All button
+        // set the ListView customerList's adapter to be the ArrayAdapter
+        lv_customerList.setAdapter(customerArrayAdapter);
     }
 }
