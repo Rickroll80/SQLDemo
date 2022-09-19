@@ -87,8 +87,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    // Create a method that SELECT-s all records from the database table
-    // returns a list of CustomerModel
+    /**
+     * Returns a list of CustomerModels where the customer name or the customer age matches the search text.
+     * @param searchText
+     * @return
+     */
+    public List<CustomerModel> getEditedList(String searchText) {
+        List<CustomerModel> returnList = new ArrayList<>();
+        // get data from the database that matches search
+        String queryString = "SELECT * FROM " + CUSTOMER_TABLE + " WHERE " + COLUMN_CUSTOMER_NAME + " LIKE " + "'%" + searchText + "%'" +
+                "" + " OR " + COLUMN_CUSTOMER_AGE + " LIKE " + "'%" + searchText + "%'";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // query returns a cursor (result set)
+        Cursor cursor = db.rawQuery(queryString, null); // null b/c no prepared statements are in use here
+        // Loop through the cursor (result set) & create new customer objects
+        // Insert the customer objects into the returnList.
+        if (cursor.moveToFirst()) {
+            do {
+                int customerID = cursor.getInt(0); // at pos. 0
+                String customerName = cursor.getString(1); // at pos. 1
+                int customerAge = cursor.getInt(2); // at pos. 2
+                boolean customerActive = cursor.getInt(3) == 1;
+                // create new customer
+                CustomerModel newCustomer = new CustomerModel(customerID, customerName, customerAge, customerActive);
+                returnList.add(newCustomer); // append newCustomer to the list to be returned
+            } while (cursor.moveToNext());
+        } else {
+            // failure – the list will be returned empty
+        }
+        // clean up
+        cursor.close();
+        db.close();
+
+        return returnList;
+
+    }
+
+    /**
+     * Method that SELECT-s all records from the database table
+     * @return a list of CustomerModels
+     */
     public List<CustomerModel> getEveryone() {
         List<CustomerModel> returnList = new ArrayList<>();
         // get data from the database
@@ -96,7 +135,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         // query returns a cursor (result set)
-        Cursor cursor = db.rawQuery(queryString, null); // null b/c no prepared statements are in use here
+        Cursor cursor = db.rawQuery(queryString, null);
         if (cursor.moveToFirst()) {
             // Loop through the cursor (result set) & create new customer objects
             // Insert the customer objects into the returnList.
@@ -104,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int customerID = cursor.getInt(0); // at pos. 0
                 String customerName = cursor.getString(1); // at pos. 1
                 int customerAge = cursor.getInt(2); // at pos. 2
-                boolean customerActive = (cursor.getInt(3) == 1) ? true : false; // ternary operator
+                boolean customerActive = cursor.getInt(3) == 1;
 
                 CustomerModel newCustomer = new CustomerModel(customerID, customerName, customerAge, customerActive);
                 returnList.add(newCustomer); // add the newCustomer to the returnList
