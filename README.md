@@ -1,6 +1,6 @@
 # Customers SQL App
 
-This is a basic Android mobile application that tracks the name, age, and active/inactive status of customers. Built using Java in Android Studio, a SQLLite local database tracks data entered into fields by the user, and this data is displayed on the screen upon pressing the "Add" button. Each customer is assigned a unique ID. 
+This is a basic Android mobile application that tracks the name, age, and active/inactive status of customers. Built using Java in Android Studio, a SQLite local database tracks data entered into fields by the user, and this data is displayed on the screen upon pressing the "Add" button. Each customer is assigned a unique ID. 
 
 Features: 
 - Clicking on a customer in the list deletes that customer from the database and from the screen. 
